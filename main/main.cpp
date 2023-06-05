@@ -87,6 +87,7 @@
 #endif
 
 #include "godot_tracy/profiler.h"
+#include "halcyon/telemetry/pahdo_telemetry.h"
 
 /* Static members */
 
@@ -2207,6 +2208,7 @@ static uint64_t frame_delta_sync_time = 0;
 
 bool Main::iteration() {
 	ZoneScoped;
+	PdTelemetry::singleton()->start_new_frame();
 
 	OS::get_singleton()->get_main_loop()->poll_net();
 
