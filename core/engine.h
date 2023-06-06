@@ -67,8 +67,8 @@ private:
 	bool _in_physics;
 
 	//## START_ENGINE_EDIT
-	bool _in_pre_update : 1;
-	bool _in_post_update : 1;
+	bool _in_pre_process : 1;
+	bool _in_post_process : 1;
 	//## END_ENGINE_EDIT
 
 	List<Singleton> singletons;
@@ -98,8 +98,8 @@ public:
 	uint64_t get_idle_frames() const { return _idle_frames; }
 	bool is_in_physics_frame() const { return _in_physics; }
 	//## BEGIN_ENGINE_EDIT
-	bool is_in_pre_update() const { return _in_pre_update; }
-	bool is_in_post_update() const { return _in_post_update; }
+	bool is_in_pre_process() const { return _in_pre_process; }
+	bool is_in_post_process() const { return _in_post_process; }
 	//## END_ENGINE_EDIT
 
 	uint64_t get_idle_frame_ticks() const { return _frame_ticks; }

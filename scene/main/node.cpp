@@ -52,18 +52,18 @@ int Node::orphan_node_count = 0;
 void Node::_notification(int p_notification) {
 	switch (p_notification) {
 		//## BEGIN_ENGINE_EDIT
-		case NOTIFICATION_PRE_UPDATE_PROCESS: {
-			if (get_script_instance() && !data.manual_pre_update) {
+		case NOTIFICATION_PRE_PROCESS: {
+			if (get_script_instance() && !data.manual_pre_process) {
 				Variant time = get_process_delta_time();
 				const Variant *ptr[1] = { &time };
-				get_script_instance()->call_multilevel(SceneStringNames::get_singleton()->_pre_update, ptr, 1);
+				get_script_instance()->call_multilevel(SceneStringNames::get_singleton()->_pre_process, ptr, 1);
 			}
 		} break;
-		case NOTIFICATION_POST_UPDATE_PROCESS: {
-			if (get_script_instance() && !data.manual_post_update) {
+		case NOTIFICATION_POST_PROCESS: {
+			if (get_script_instance() && !data.manual_post_process) {
 				Variant time = get_process_delta_time();
 				const Variant *ptr[1] = { &time };
-				get_script_instance()->call_multilevel(SceneStringNames::get_singleton()->_post_update, ptr, 1);
+				get_script_instance()->call_multilevel(SceneStringNames::get_singleton()->_post_process, ptr, 1);
 			}
 		} break;
 		case NOTIFICATION_PROCESS: {
@@ -164,7 +164,14 @@ void Node::_notification(int p_notification) {
 				if (get_script_instance()->has_method(SceneStringNames::get_singleton()->_process)) {
 					set_process(true);
 				}
-
+				//## BEGIN_ENGINE_EDIT
+				if (get_script_instance()->has_method(SceneStringNames::get_singleton()->_pre_process)) {
+					set_pre_process(true);
+				}
+				if (get_script_instance()->has_method(SceneStringNames::get_singleton()->_post_process)) {
+					set_post_process(true);
+				}
+				//## END_ENGINE_EDIT
 				if (get_script_instance()->has_method(SceneStringNames::get_singleton()->_physics_process)) {
 					set_physics_process(true);
 				}
@@ -825,10 +832,10 @@ bool Node::can_process_notification(int p_what) const {
 		case NOTIFICATION_INTERNAL_PHYSICS_PROCESS:
 			return data.physics_process_internal;
 		//## BEGIN_ENGINE_EDIT
-		case NOTIFICATION_PRE_UPDATE_PROCESS:
-			return data.pre_update_process;
-		case NOTIFICATION_POST_UPDATE_PROCESS:
-			return data.post_update_process;
+		case NOTIFICATION_PRE_PROCESS:
+			return data.pre_process;
+		case NOTIFICATION_POST_PROCESS:
+			return data.post_process;
 		//## END_ENGINE_EDIT
 	}
 
@@ -935,39 +942,51 @@ void Node::set_process(bool p_idle_process) {
 
 //## BEGIN_ENGINE_EDIT
 void Node::set_pre_process(bool p_pre_process) {
-	if (data.pre_update_process == p_pre_process) {
+	if (data.pre_process == p_pre_process) {
 		return;
 	}
-	data.pre_update_process = p_pre_process;
+	data.pre_process = p_pre_process;
 
-	if (data.pre_update_process) {
-		add_to_group("pre_update_process", false);
+	if (data.pre_process) {
+		add_to_group("pre_process", false);
 	} else {
-		remove_from_group("pre_update_process");
+		remove_from_group("pre_process");
 	}
-	_change_notify("pre_update_process");
+	_change_notify("pre_process");
 }
 void Node::set_post_process(bool p_post_process) {
-	if (data.post_update_process == p_post_process) {
+	if (data.post_process == p_post_process) {
 		return;
 	}
-	data.post_update_process = p_post_process;
+	data.post_process = p_post_process;
 
-	if (data.post_update_process) {
-		add_to_group("post_update_process", false);
+	if (data.post_process) {
+		add_to_group("post_process", false);
 	} else {
-		remove_from_group("post_update_process");
+		remove_from_group("post_process");
 	}
-	_change_notify("post_update_process");
+	_change_notify("post_process");
 }
 void Node::set_manual_process(bool manual) {
 	data.manual_process = manual;
 }
 void Node::set_manual_pre_process(bool manual) {
-	data.manual_pre_update = manual;
+	data.manual_pre_process = manual;
 }
 void Node::set_manual_post_process(bool manual) {
-	data.manual_post_update = manual;
+	data.manual_post_process = manual;
+}
+bool Node::is_pre_processing() const {
+	return data.pre_process;
+}
+bool Node::can_pre_process() const {
+	return data.pre_process && can_process();
+}
+bool Node::is_post_processing() const {
+	return data.post_process;
+}
+bool Node::can_post_process() const {
+	return data.post_process && can_process();
 }
 //## END_ENGINE_EDIT
 
@@ -3090,6 +3109,20 @@ void Node::_bind_methods() {
 	ClassDB::bind_method(D_METHOD("print_stray_nodes"), &Node::_print_stray_nodes);
 	ClassDB::bind_method(D_METHOD("get_position_in_parent"), &Node::get_position_in_parent);
 
+	//## BEGIN_ENGINE_EDIT
+	ClassDB::bind_method(D_METHOD("set_manual_process", "enable"), &Node::set_manual_process);
+
+	ClassDB::bind_method(D_METHOD("set_pre_process", "enable"), &Node::set_pre_process);
+	ClassDB::bind_method(D_METHOD("set_manual_pre_process", "enable"), &Node::set_manual_pre_process);
+	ClassDB::bind_method(D_METHOD("is_pre_processing"), &Node::is_pre_processing);
+	ClassDB::bind_method(D_METHOD("can_pre_process"), &Node::can_pre_process);
+
+	ClassDB::bind_method(D_METHOD("set_post_process", "enable"), &Node::set_post_process);
+	ClassDB::bind_method(D_METHOD("set_manual_post_process", "enable"), &Node::set_manual_post_process);
+	ClassDB::bind_method(D_METHOD("is_post_processing"), &Node::is_post_processing);
+	ClassDB::bind_method(D_METHOD("can_post_process"), &Node::can_post_process);
+	//## END_ENGINE_EDIT
+
 	ClassDB::bind_method(D_METHOD("set_display_folded", "fold"), &Node::set_display_folded);
 	ClassDB::bind_method(D_METHOD("is_displayed_folded"), &Node::is_displayed_folded);
 
@@ -3191,6 +3224,13 @@ void Node::_bind_methods() {
 	BIND_CONSTANT(NOTIFICATION_POST_ENTER_TREE);
 	BIND_CONSTANT(NOTIFICATION_RESET_PHYSICS_INTERPOLATION);
 
+	//## BEGIN_ENGINE_EDIT
+	BIND_CONSTANT(NOTIFICATION_PRE_INTERNAL_PROCESS);
+	BIND_CONSTANT(NOTIFICATION_PRE_PROCESS);
+	BIND_CONSTANT(NOTIFICATION_POST_INTERNAL_PROCESS);
+	BIND_CONSTANT(NOTIFICATION_POST_PROCESS);	
+	//## END_ENGINE_EDIT
+
 	BIND_CONSTANT(NOTIFICATION_WM_MOUSE_ENTER);
 	BIND_CONSTANT(NOTIFICATION_WM_MOUSE_EXIT);
 	BIND_CONSTANT(NOTIFICATION_WM_FOCUS_IN);
@@ -3245,6 +3285,10 @@ void Node::_bind_methods() {
 	ADD_PROPERTY(PropertyInfo(Variant::INT, "process_priority"), "set_process_priority", "get_process_priority");
 
 	BIND_VMETHOD(MethodInfo("_process", PropertyInfo(Variant::REAL, "delta")));
+	//## BEGIN_ENGINE_EDIT
+	BIND_VMETHOD(MethodInfo("_pre_process", PropertyInfo(Variant::REAL, "delta")));
+	BIND_VMETHOD(MethodInfo("_post_process", PropertyInfo(Variant::REAL, "delta")));
+	//## END_ENGINE_EDIT
 	BIND_VMETHOD(MethodInfo("_physics_process", PropertyInfo(Variant::REAL, "delta")));
 	BIND_VMETHOD(MethodInfo("_enter_tree"));
 	BIND_VMETHOD(MethodInfo("_exit_tree"));
@@ -3279,12 +3323,12 @@ Node::Node() {
 	data.idle_process = false;
 
 	//## BEGIN_ENGINE_EDIT
-	data.pre_update_process = false;
-	data.post_update_process = false;
+	data.pre_process = false;
+	data.post_process = false;
 
 	data.manual_process = false;
-	data.manual_pre_update = false;
-	data.manual_post_update = false;
+	data.manual_pre_process = false;
+	data.manual_post_process = false;
 	//## END_ENGINE_EDIT
 
 	data.process_priority = 0;

@@ -711,6 +711,12 @@
 				Enables unhandled key input processing. Enabled automatically if [method _unhandled_key_input] is overridden. Any calls to this before [method _ready] will be ignored.
 			</description>
 		</method>
+		<method name="set_scene_inherited_state">
+			<return type="void" />
+			<argument index="0" name="arg0" type="SceneState" />
+			<description>
+			</description>
+		</method>
 		<method name="set_scene_instance_load_placeholder">
 			<return type="void" />
 			<argument index="0" name="load_placeholder" type="bool" />

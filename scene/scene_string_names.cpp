@@ -94,8 +94,8 @@ SceneStringNames::SceneStringNames() {
 	_process = StaticCString::create("_process");
 
 	//## BEGIN_ENGINE_EDIT
-	_pre_update = StaticCString::create("_pre_update");
-	_post_update = StaticCString::create("_post_update");
+	_pre_process = StaticCString::create("_pre_process");
+	_post_process = StaticCString::create("_post_process");
 	//## END_ENGINE_EDIT
 
 	_enter_tree = StaticCString::create("_enter_tree");

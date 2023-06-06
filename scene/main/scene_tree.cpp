@@ -589,23 +589,23 @@ void SceneTree::poll_net() {
 	}
 }
 //## BEGIN_ENGINE_EDIT
-void SceneTree::pre_update(float p_time) {
+void SceneTree::pre_process(float p_time) {
 	++root_lock;
-	MainLoop::pre_update(p_time);
+	MainLoop::pre_process(p_time);
 
-	emit_signal("pre_update_process");
-	_notify_group_pause("pre_update_process_internal", Node::NOTIFICATION_PRE_UPDATE_INTERNAL_PROCESS);
-	_notify_group_pause("pre_update_process", Node::NOTIFICATION_PRE_UPDATE_PROCESS);
+	emit_signal("pre_process");
+	_notify_group_pause("pre_process_internal", Node::NOTIFICATION_PRE_INTERNAL_PROCESS);
+	_notify_group_pause("pre_process", Node::NOTIFICATION_PRE_PROCESS);
 
 	--root_lock;
 }
-void SceneTree::post_update(float p_time) {
+void SceneTree::post_process(float p_time) {
 	++root_lock;
-	MainLoop::post_update(p_time);
+	MainLoop::post_process(p_time);
 
-	emit_signal("post_update_process");
-	_notify_group_pause("post_update_process_internal", Node::NOTIFICATION_POST_UPDATE_INTERNAL_PROCESS);
-	_notify_group_pause("post_update_process", Node::NOTIFICATION_POST_UPDATE_PROCESS);
+	emit_signal("post_process");
+	_notify_group_pause("post_process_internal", Node::NOTIFICATION_POST_INTERNAL_PROCESS);
+	_notify_group_pause("post_process", Node::NOTIFICATION_POST_PROCESS);
 
 	--root_lock;
 }

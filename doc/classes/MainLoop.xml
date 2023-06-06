@@ -101,6 +101,18 @@
 				If implemented, the method must return a boolean value. [code]true[/code] ends the main loop, while [code]false[/code] lets it proceed to the next frame.
 			</description>
 		</method>
+		<method name="_post_update" qualifiers="virtual">
+			<return type="void" />
+			<argument index="0" name="delta" type="float" />
+			<description>
+			</description>
+		</method>
+		<method name="_pre_update" qualifiers="virtual">
+			<return type="void" />
+			<argument index="0" name="delta" type="float" />
+			<description>
+			</description>
+		</method>
 		<method name="finish">
 			<return type="void" />
 			<description>

@@ -72,8 +72,10 @@ public:
 	virtual void poll_net() {}
 	virtual bool idle(float p_time);
 	//## BEGIN_ENGINE_EDIT
-	virtual void pre_update(float p_time);
-	virtual void post_update(float p_time);
+	virtual void process(float p_time);
+	virtual void process_physics(float p_time);	
+	virtual void pre_process(float p_time);
+	virtual void post_process(float p_time);
 	//## END_ENGINE_EDIT
 	virtual void finish();
 

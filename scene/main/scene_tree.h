@@ -311,8 +311,8 @@ public:
 	virtual bool idle(float p_time);
 
 	//## BEGIN_ENGINE_EDIT
-	virtual void pre_update(float p_time);
-	virtual void post_update(float p_time);
+	virtual void pre_process(float p_time);
+	virtual void post_process(float p_time);
 	//## END_ENGINE_EDIT
 
 	virtual void finish();
