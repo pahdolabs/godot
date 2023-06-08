@@ -2260,6 +2260,13 @@ bool Main::iteration() {
 
 	last_ticks = ticks;
 
+	//## BEGIN_ENGINE_EDIT
+	{
+		ZoneScopedN("Main::iteration::PreProcess");
+		OS::get_singleton()->get_main_loop()->pre_process(step * time_scale);
+	}
+	//## END_ENGINE_EDIT
+
 	static const int max_physics_steps = 8;
 	if (fixed_fps == -1 && advance.physics_steps > max_physics_steps) {
 		step -= (advance.physics_steps - max_physics_steps) * frame_slice;
@@ -2308,6 +2315,7 @@ bool Main::iteration() {
 
 			Physics2DServer::get_singleton()->end_sync();
 			Physics2DServer::get_singleton()->step(frame_slice * time_scale);
+			OS::get_singleton()->get_main_loop()->process_physics(step * time_scale);
 		}
 
 		message_queue->flush();
@@ -2331,10 +2339,19 @@ bool Main::iteration() {
 		ZoneScopedN("Main::iteration::IdleProcess");
 		if (OS::get_singleton()->get_main_loop()->idle(step * time_scale)) {
 			exit = true;
+		} else {
+			OS::get_singleton()->get_main_loop()->process(step * time_scale);
 		}
 		visual_server_callbacks->flush();
 		message_queue->flush();
 	}
+
+	//## BEGIN_ENGINE_EDIT
+	{
+		ZoneScopedN("Main::iteration::PostProcess");
+		OS::get_singleton()->get_main_loop()->post_process(step * time_scale);
+	}
+	//## END_ENGINE_EDIT
 
 	VisualServer::get_singleton()->sync(); //sync if still drawing from previous frames.
 

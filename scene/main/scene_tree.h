@@ -310,6 +310,11 @@ public:
 	virtual void poll_net();
 	virtual bool idle(float p_time);
 
+	//## BEGIN_ENGINE_EDIT
+	virtual void pre_process(float p_time);
+	virtual void post_process(float p_time);
+	//## END_ENGINE_EDIT
+
 	virtual void finish();
 
 	bool is_auto_accept_quit() const;

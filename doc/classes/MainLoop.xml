@@ -101,6 +101,35 @@
 				If implemented, the method must return a boolean value. [code]true[/code] ends the main loop, while [code]false[/code] lets it proceed to the next frame.
 			</description>
 		</method>
+		<method name="_post_process" qualifiers="virtual">
+			<return type="void" />
+			<argument index="0" name="delta" type="float" />
+			<description>
+			The post process event is called each frame after pre-process, physics, and process.  It is called before rendering.
+			Corresponds to the [constant NOTIFICATION_POST_PROCESS] notification in [method Object._notification].
+			</description>
+		</method>
+		<method name="_pre_process" qualifiers="virtual">
+			<return type="void" />
+			<argument index="0" name="delta" type="float" />
+			<description>
+			The pre process event is called each frame at the beginning of the main loop tick.  It is called before physics, process, and post_process.
+			Corresponds to the [constant NOTIFICATION_PRE_PROCESS] notification in [method Object._notification].
+			</description>
+		</method>
+		<method name="_process" qualifiers="virtual">
+			<return type="void" />
+			<argument index="0" name="delta" type="float" />
+			<description>
+			The process event is called each frame once.  It is called after pre_process and physics, but is called before post_process and rendering.
+			</description>
+		</method>
+		<method name="_process_physics" qualifiers="virtual">
+			<return type="void" />
+			<argument index="0" name="delta" type="float" />
+			<description>
+			</description>
+		</method>
 		<method name="finish">
 			<return type="void" />
 			<description>

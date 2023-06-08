@@ -588,6 +588,28 @@ void SceneTree::poll_net() {
 		multiplayer->poll();
 	}
 }
+//## BEGIN_ENGINE_EDIT
+void SceneTree::pre_process(float p_time) {
+	++root_lock;
+	MainLoop::pre_process(p_time);
+
+	emit_signal("pre_process");
+	_notify_group_pause("pre_process_internal", Node::NOTIFICATION_PRE_INTERNAL_PROCESS);
+	_notify_group_pause("pre_process", Node::NOTIFICATION_PRE_PROCESS);
+
+	--root_lock;
+}
+void SceneTree::post_process(float p_time) {
+	++root_lock;
+	MainLoop::post_process(p_time);
+
+	emit_signal("post_process");
+	_notify_group_pause("post_process_internal", Node::NOTIFICATION_POST_INTERNAL_PROCESS);
+	_notify_group_pause("post_process", Node::NOTIFICATION_POST_PROCESS);
+
+	--root_lock;
+}
+//## END_ENGINE_EDIT
 
 bool SceneTree::idle(float p_time) {
 	//print_line("ram: "+itos(OS::get_singleton()->get_static_memory_usage())+" sram: "+itos(OS::get_singleton()->get_dynamic_memory_usage()));
