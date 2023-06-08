@@ -64,6 +64,24 @@
 				[b]Note:[/b] This method is only called if the node is present in the scene tree (i.e. if it's not an orphan).
 			</description>
 		</method>
+		<method name="_post_process" qualifiers="virtual">
+			<return type="void" />
+			<argument index="0" name="delta" type="float" />
+			<description>
+				The post process event is called each frame after pre-process, physics, and process.  It is called before rendering.
+				Corresponds to the [constant NOTIFICATION_POST_PROCESS] notification in [method Object._notification].
+				[b]Note:[/b] This method is only called if the node is present in the scene tree (i.e. if it's not an orphan).
+			</description>
+		</method>
+		<method name="_pre_process" qualifiers="virtual">
+			<return type="void" />
+			<argument index="0" name="delta" type="float" />
+			<description>
+				The pre process event is called each frame at the beginning of the main loop tick.  It is called before physics, process, and post_process.
+				Corresponds to the [constant NOTIFICATION_PRE_PROCESS] notification in [method Object._notification].
+				[b]Note:[/b] This method is only called if the node is present in the scene tree (i.e. if it's not an orphan).
+			</description>
+		</method>
 		<method name="_process" qualifiers="virtual">
 			<return type="void" />
 			<argument index="0" name="delta" type="float" />
@@ -139,6 +157,20 @@
 				Adds the node to a group. Groups are helpers to name and organize a subset of nodes, for example "enemies" or "collectables". A node can be in any number of groups. Nodes can be assigned a group at any time, but will not be added until they are inside the scene tree (see [method is_inside_tree]). See notes in the description, and the group methods in [SceneTree].
 				The [code]persistent[/code] option is used when packing node to [PackedScene] and saving to file. Non-persistent groups aren't stored.
 				[b]Note:[/b] For performance reasons, the order of node groups is [i]not[/i] guaranteed. The order of node groups should not be relied upon as it can vary across project runs.
+			</description>
+		</method>
+		<method name="can_post_process" qualifiers="const">
+			<return type="bool" />
+			<description>
+				This variable determines if a node will be possibly ticked during the post_process events.  
+				Make sure its marked as true to enable pre-process ticking.
+			</description>
+		</method>
+		<method name="can_pre_process" qualifiers="const">
+			<return type="bool" />
+			<description>
+				This variable determines if a node will be possibly ticked during the pre_process events. 
+				Make sure its marked as true to enable pre-process ticking.
 			</description>
 		</method>
 		<method name="can_process" qualifiers="const">
@@ -415,6 +447,18 @@
 				Returns [code]true[/code] if internal physics processing is enabled (see [method set_physics_process_internal]).
 			</description>
 		</method>
+		<method name="is_post_processing" qualifiers="const">
+			<return type="bool" />
+			<description>
+				Returns [code]true[/code] if post processing is enabled (see [method post_process]).
+			</description>
+		</method>
+		<method name="is_pre_processing" qualifiers="const">
+			<return type="bool" />
+			<description>
+			Returns [code]true[/code] if pre processing is enabled (see [method pre_process]).
+			</description>
+		</method>
 		<method name="is_processing" qualifiers="const">
 			<return type="bool" />
 			<description>
@@ -652,6 +696,27 @@
 				Sets the folded state of the node in the Scene dock.
 			</description>
 		</method>
+		<method name="set_manual_post_process">
+			<return type="void" />
+			<argument index="0" name="enable" type="bool" />
+			<description>
+				Set this if your node will be in charge of manually handling post_process events.  Useful for changing the order from script->C++ to C++ -> Script.
+			</description>
+		</method>
+		<method name="set_manual_pre_process">
+			<return type="void" />
+			<argument index="0" name="enable" type="bool" />
+			<description>
+				Set this if your node will be in charge of manually handling pre_process events.  Useful for changing the order from script->C++ to C++ -> Script.
+			</description>
+		</method>
+		<method name="set_manual_process">
+			<return type="void" />
+			<argument index="0" name="enable" type="bool" />
+			<description>
+				Set this if your node will be in charge of manually handling process events.  Useful for changing the order from script->C++ to C++ -> Script.
+			</description>
+		</method>
 		<method name="set_network_master">
 			<return type="void" />
 			<argument index="0" name="id" type="int" />
@@ -673,6 +738,18 @@
 			<description>
 				Enables or disables internal physics for this node. Internal physics processing happens in isolation from the normal [method _physics_process] calls and is used by some nodes internally to guarantee proper functioning even if the node is paused or physics processing is disabled for scripting ([method set_physics_process]). Only useful for advanced uses to manipulate built-in nodes' behavior.
 				[b]Warning:[/b] Built-in Nodes rely on the internal processing for their own logic, so changing this value from your code may lead to unexpected behavior. Script access to this internal logic is provided for specific advanced uses, but is unsafe and not supported.
+			</description>
+		</method>
+		<method name="set_post_process">
+			<return type="void" />
+			<argument index="0" name="enable" type="bool" />
+			<description>
+			</description>
+		</method>
+		<method name="set_pre_process">
+			<return type="void" />
+			<argument index="0" name="enable" type="bool" />
+			<description>
 			</description>
 		</method>
 		<method name="set_process">
@@ -868,6 +945,18 @@
 		</constant>
 		<constant name="NOTIFICATION_RESET_PHYSICS_INTERPOLATION" value="28">
 			Notification received when [method reset_physics_interpolation] is called on the node or parent nodes.
+		</constant>
+		<constant name="NOTIFICATION_PRE_INTERNAL_PROCESS" value="29">
+			Notification received when pre_process is called for internal nodes.
+		</constant>
+		<constant name="NOTIFICATION_PRE_PROCESS" value="30">
+			Notification received when pre_process is called for nodes.
+		</constant>
+		<constant name="NOTIFICATION_POST_INTERNAL_PROCESS" value="31">
+			Notification received when post_process is called for internal nodes.
+		</constant>
+		<constant name="NOTIFICATION_POST_PROCESS" value="32">
+			Notification received when post_process is called for nodes.
 		</constant>
 		<constant name="NOTIFICATION_WM_MOUSE_ENTER" value="1002">
 			Notification received from the OS when the mouse enters the game window.
