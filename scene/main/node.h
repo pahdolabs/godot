@@ -411,15 +411,15 @@ public:
 	bool is_physics_processing() const;
 
 	//## BEGIN_ENGINE_EDIT
-	void Node::set_pre_process(bool p_pre_process);
-	void Node::set_post_process(bool p_pre_process);
-	bool Node::is_pre_processing() const;
-	bool Node::can_pre_process() const;
-	void Node::set_manual_process(bool manual);
-	void Node::set_manual_pre_process(bool manual);
-	void Node::set_manual_post_process(bool manual);
-	bool Node::is_post_processing() const;
-	bool Node::can_post_process() const;
+	void set_pre_process(bool p_pre_process);
+	void set_post_process(bool p_pre_process);
+	bool is_pre_processing() const;
+	bool can_pre_process() const;
+	void set_manual_process(bool manual);
+	void set_manual_pre_process(bool manual);
+	void set_manual_post_process(bool manual);
+	bool is_post_processing() const;
+	bool can_post_process() const;
 	//## END_ENGINE_EDIT
 
 	void set_process(bool p_idle_process);
