@@ -29,6 +29,7 @@
 /*************************************************************************/
 
 #include "main/main.h"
+#include "testing/run_catch.h"
 #include "os_server.h"
 
 int main(int argc, char *argv[]) {
@@ -38,8 +39,19 @@ int main(int argc, char *argv[]) {
 	if (err != OK)
 		return 255;
 
-	if (Main::start())
+	if (Main::start()) {
 		os.run(); // it is actually the OS that decides how to run
+	}
+	else {
+		List<String> args = os.get_cmdline_args();
+		if (args.find("--test-external") != nullptr) {
+			#ifdef CATCH_TESTS
+			run_catch_tests(argc, argv);
+			#else
+			printf("Option --test_external is invalid because this program was built without Catch2.");
+			#endif
+		}
+	}
 	Main::cleanup();
 
 	return os.get_exit_code();
