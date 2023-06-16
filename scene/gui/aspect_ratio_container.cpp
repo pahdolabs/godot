@@ -55,6 +55,16 @@ void AspectRatioContainer::set_ratio(float p_ratio) {
 	queue_sort();
 }
 
+void AspectRatioContainer::set_max_ratio(float p_ratio) {
+	max_ratio = p_ratio;
+	queue_sort();
+}
+
+void AspectRatioContainer::set_use_max_ratio(bool p_use_max_ratio) {
+	use_max_ratio = p_use_max_ratio;
+	queue_sort();
+}
+
 void AspectRatioContainer::set_stretch_mode(StretchMode p_mode) {
 	stretch_mode = p_mode;
 	queue_sort();
@@ -82,8 +92,14 @@ void AspectRatioContainer::_notification(int p_what) {
 				if (c->is_set_as_toplevel()) {
 					continue;
 				}
+				float actual_ratio = ratio;
+				if (size.y > 0.0001f && use_max_ratio) {
+					float current_ratio = size.x / size.y;
+					actual_ratio = CLAMP(current_ratio, ratio, MAX(ratio, max_ratio));
+				}
+
 				Size2 child_minsize = c->get_combined_minimum_size();
-				Size2 child_size = Size2(ratio, 1.0);
+				Size2 child_size = Size2(actual_ratio, 1.0);
 				float scale_factor = 1.0;
 
 				switch (stretch_mode) {
@@ -140,6 +156,12 @@ void AspectRatioContainer::_bind_methods() {
 	ClassDB::bind_method(D_METHOD("set_ratio", "ratio"), &AspectRatioContainer::set_ratio);
 	ClassDB::bind_method(D_METHOD("get_ratio"), &AspectRatioContainer::get_ratio);
 
+	ClassDB::bind_method(D_METHOD("set_max_ratio", "ratio"), &AspectRatioContainer::set_max_ratio);
+	ClassDB::bind_method(D_METHOD("get_max_ratio"), &AspectRatioContainer::get_max_ratio);
+
+	ClassDB::bind_method(D_METHOD("set_use_max_ratio", "use_max_ratio"), &AspectRatioContainer::set_use_max_ratio);
+	ClassDB::bind_method(D_METHOD("get_use_max_ratio"), &AspectRatioContainer::get_use_max_ratio);
+
 	ClassDB::bind_method(D_METHOD("set_stretch_mode", "stretch_mode"), &AspectRatioContainer::set_stretch_mode);
 	ClassDB::bind_method(D_METHOD("get_stretch_mode"), &AspectRatioContainer::get_stretch_mode);
 
@@ -150,6 +172,8 @@ void AspectRatioContainer::_bind_methods() {
 	ClassDB::bind_method(D_METHOD("get_alignment_vertical"), &AspectRatioContainer::get_alignment_vertical);
 
 	ADD_PROPERTY(PropertyInfo(Variant::REAL, "ratio", PROPERTY_HINT_RANGE, "0.001,10.0,0.0001,or_greater"), "set_ratio", "get_ratio");
+	ADD_PROPERTY(PropertyInfo(Variant::REAL, "max_ratio", PROPERTY_HINT_RANGE, "0.001,10.0,0.0001,or_greater"), "set_max_ratio", "get_max_ratio");
+	ADD_PROPERTY(PropertyInfo(Variant::BOOL, "use_max_ratio"), "set_use_max_ratio", "get_use_max_ratio");
 	ADD_PROPERTY(PropertyInfo(Variant::INT, "stretch_mode", PROPERTY_HINT_ENUM, "Width controls height,Height controls width,Fit,Cover"), "set_stretch_mode", "get_stretch_mode");
 
 	ADD_GROUP("Alignment", "alignment_");

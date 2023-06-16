@@ -56,6 +56,8 @@ public:
 
 private:
 	float ratio = 1.0;
+	float max_ratio = ratio;
+	bool use_max_ratio = false;
 	StretchMode stretch_mode = STRETCH_FIT;
 	AlignMode alignment_horizontal = ALIGN_CENTER;
 	AlignMode alignment_vertical = ALIGN_CENTER;
@@ -63,6 +65,12 @@ private:
 public:
 	void set_ratio(float p_ratio);
 	float get_ratio() const { return ratio; }
+
+	void set_max_ratio(float p_max_ratio);
+	float get_max_ratio() const { return max_ratio; }
+
+	void set_use_max_ratio(bool p_use_max_ratio);
+	float get_use_max_ratio() const { return use_max_ratio; }
 
 	void set_stretch_mode(StretchMode p_mode);
 	StretchMode get_stretch_mode() const { return stretch_mode; }
