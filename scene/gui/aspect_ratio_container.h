@@ -58,6 +58,8 @@ private:
 	float ratio = 1.0;
 	float max_ratio = ratio;
 	bool use_max_ratio = false;
+	bool use_auto_size = false;
+	float auto_size_extent = 1080.0f;
 	StretchMode stretch_mode = STRETCH_FIT;
 	AlignMode alignment_horizontal = ALIGN_CENTER;
 	AlignMode alignment_vertical = ALIGN_CENTER;
@@ -70,7 +72,13 @@ public:
 	float get_max_ratio() const { return max_ratio; }
 
 	void set_use_max_ratio(bool p_use_max_ratio);
-	float get_use_max_ratio() const { return use_max_ratio; }
+	bool get_use_max_ratio() const { return use_max_ratio; }
+
+	void set_use_auto_size(bool p_use_auto_size);
+	bool get_use_auto_size() const { return use_auto_size; }
+
+	void set_auto_size_extent(float p_auto_size_extents);
+	float get_auto_size_extent() const { return auto_size_extent; }
 
 	void set_stretch_mode(StretchMode p_mode);
 	StretchMode get_stretch_mode() const { return stretch_mode; }
