@@ -64,8 +64,6 @@ private:
 	int line_count;
 	bool uppercase;
 
-	int get_longest_line_width() const;
-
 	struct WordCache {
 		enum {
 			CHAR_NEWLINE = -1,
@@ -97,6 +95,7 @@ private:
 	int max_lines_visible;
 
 protected:
+	int get_longest_line_width() const;
 	void _notification(int p_what);
 
 	static void _bind_methods();

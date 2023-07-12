@@ -65,6 +65,16 @@ void AspectRatioContainer::set_use_max_ratio(bool p_use_max_ratio) {
 	queue_sort();
 }
 
+void AspectRatioContainer::set_auto_size_extent(float p_auto_size_extent) {
+	auto_size_extent = p_auto_size_extent;
+	queue_sort();
+}
+
+void AspectRatioContainer::set_use_auto_size(bool p_use_auto_size) {
+	use_auto_size = p_use_auto_size;
+	queue_sort();
+}
+
 void AspectRatioContainer::set_stretch_mode(StretchMode p_mode) {
 	stretch_mode = p_mode;
 	queue_sort();
@@ -145,8 +155,20 @@ void AspectRatioContainer::_notification(int p_what) {
 					} break;
 				}
 				Vector2 offset = (size - child_size) * Vector2(align_x, align_y);
-
 				fit_child_in_rect(c, Rect2(offset, child_size));
+
+				// order of operations is important here to preserve size & scaling
+				if (use_auto_size) {
+					if (auto_size_extent < 1 || ((child_size.x > auto_size_extent) && (child_size.y > auto_size_extent))) {
+						c->set_scale(Vector2(1, 1));
+					} else {
+						Vector2 sizes = child_size / auto_size_extent;
+						float actual_scale = MIN(sizes.x, sizes.y);
+						sizes.x = sizes.y = MIN(1.0f, actual_scale);
+						c->set_scale(sizes);
+						c->set_size(c->get_size() / sizes, false);
+					}
+				}
 			}
 		} break;
 	}
@@ -162,6 +184,12 @@ void AspectRatioContainer::_bind_methods() {
 	ClassDB::bind_method(D_METHOD("set_use_max_ratio", "use_max_ratio"), &AspectRatioContainer::set_use_max_ratio);
 	ClassDB::bind_method(D_METHOD("get_use_max_ratio"), &AspectRatioContainer::get_use_max_ratio);
 
+	ClassDB::bind_method(D_METHOD("set_use_auto_size", "use_auto_size"), &AspectRatioContainer::set_use_auto_size);
+	ClassDB::bind_method(D_METHOD("get_use_auto_size"), &AspectRatioContainer::get_use_auto_size);
+
+	ClassDB::bind_method(D_METHOD("set_auto_size_extent", "auto_size_extent"), &AspectRatioContainer::set_auto_size_extent);
+	ClassDB::bind_method(D_METHOD("get_auto_size_extent"), &AspectRatioContainer::get_auto_size_extent);
+
 	ClassDB::bind_method(D_METHOD("set_stretch_mode", "stretch_mode"), &AspectRatioContainer::set_stretch_mode);
 	ClassDB::bind_method(D_METHOD("get_stretch_mode"), &AspectRatioContainer::get_stretch_mode);
 
@@ -174,6 +202,8 @@ void AspectRatioContainer::_bind_methods() {
 	ADD_PROPERTY(PropertyInfo(Variant::REAL, "ratio", PROPERTY_HINT_RANGE, "0.001,10.0,0.0001,or_greater"), "set_ratio", "get_ratio");
 	ADD_PROPERTY(PropertyInfo(Variant::REAL, "max_ratio", PROPERTY_HINT_RANGE, "0.001,10.0,0.0001,or_greater"), "set_max_ratio", "get_max_ratio");
 	ADD_PROPERTY(PropertyInfo(Variant::BOOL, "use_max_ratio"), "set_use_max_ratio", "get_use_max_ratio");
+	ADD_PROPERTY(PropertyInfo(Variant::BOOL, "use_auto_size"), "set_use_auto_size", "get_use_auto_size");
+	ADD_PROPERTY(PropertyInfo(Variant::REAL, "auto_size_extent"), "set_auto_size_extent", "get_auto_size_extent");
 	ADD_PROPERTY(PropertyInfo(Variant::INT, "stretch_mode", PROPERTY_HINT_ENUM, "Width controls height,Height controls width,Fit,Cover"), "set_stretch_mode", "get_stretch_mode");
 
 	ADD_GROUP("Alignment", "alignment_");

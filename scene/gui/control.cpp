@@ -328,7 +328,7 @@ void Control::_get_property_list(List<PropertyInfo> *p_list) const {
 
 	{
 		List<StringName> names;
-		theme->get_color_list(get_class_name(), &names);
+		theme->get_color_list(get_theme_lookup_name(), &names);
 		for (List<StringName>::Element *E = names.front(); E; E = E->next()) {
 			uint32_t hint = PROPERTY_USAGE_EDITOR | PROPERTY_USAGE_CHECKABLE;
 			if (data.color_override.has(E->get())) {
@@ -340,7 +340,7 @@ void Control::_get_property_list(List<PropertyInfo> *p_list) const {
 	}
 	{
 		List<StringName> names;
-		theme->get_constant_list(get_class_name(), &names);
+		theme->get_constant_list(get_theme_lookup_name(), &names);
 		for (List<StringName>::Element *E = names.front(); E; E = E->next()) {
 			uint32_t hint = PROPERTY_USAGE_EDITOR | PROPERTY_USAGE_CHECKABLE;
 			if (data.constant_override.has(E->get())) {
@@ -352,7 +352,7 @@ void Control::_get_property_list(List<PropertyInfo> *p_list) const {
 	}
 	{
 		List<StringName> names;
-		theme->get_font_list(get_class_name(), &names);
+		theme->get_font_list(get_theme_lookup_name(), &names);
 		for (List<StringName>::Element *E = names.front(); E; E = E->next()) {
 			uint32_t hint = PROPERTY_USAGE_EDITOR | PROPERTY_USAGE_CHECKABLE;
 			if (data.font_override.has(E->get())) {
@@ -364,7 +364,7 @@ void Control::_get_property_list(List<PropertyInfo> *p_list) const {
 	}
 	{
 		List<StringName> names;
-		theme->get_icon_list(get_class_name(), &names);
+		theme->get_icon_list(get_theme_lookup_name(), &names);
 		for (List<StringName>::Element *E = names.front(); E; E = E->next()) {
 			uint32_t hint = PROPERTY_USAGE_EDITOR | PROPERTY_USAGE_CHECKABLE;
 			if (data.icon_override.has(E->get())) {
@@ -376,7 +376,7 @@ void Control::_get_property_list(List<PropertyInfo> *p_list) const {
 	}
 	{
 		List<StringName> names;
-		theme->get_shader_list(get_class_name(), &names);
+		theme->get_shader_list(get_theme_lookup_name(), &names);
 		for (List<StringName>::Element *E = names.front(); E; E = E->next()) {
 			uint32_t hint = PROPERTY_USAGE_EDITOR | PROPERTY_USAGE_CHECKABLE;
 			if (data.shader_override.has(E->get())) {
@@ -388,7 +388,7 @@ void Control::_get_property_list(List<PropertyInfo> *p_list) const {
 	}
 	{
 		List<StringName> names;
-		theme->get_stylebox_list(get_class_name(), &names);
+		theme->get_stylebox_list(get_theme_lookup_name(), &names);
 		for (List<StringName>::Element *E = names.front(); E; E = E->next()) {
 			uint32_t hint = PROPERTY_USAGE_EDITOR | PROPERTY_USAGE_CHECKABLE;
 			if (data.style_override.has(E->get())) {
