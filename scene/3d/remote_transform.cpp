@@ -68,7 +68,7 @@ void RemoteTransform::_update_remote() {
 			Transform our_trans = get_global_transform();
 
 			if (update_remote_rotation) {
-				n->set_rotation(our_trans.basis.get_rotation());
+				n->set_global_rotation(our_trans.basis.get_rotation());
 			}
 
 			if (update_remote_scale) {
