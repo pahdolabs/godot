@@ -476,7 +476,7 @@ TreeItem *EditorHelpSearch::Runner::_create_class_hierarchy(const ClassMatch &p_
 	if (p_match.doc->inherits != "") {
 		if (class_items.has(p_match.doc->inherits)) {
 			parent = class_items[p_match.doc->inherits];
-		} else {
+		} else if (matches.has(p_match.doc->inherits)) {
 			ClassMatch &base_match = matches[p_match.doc->inherits];
 			parent = _create_class_hierarchy(base_match);
 		}
