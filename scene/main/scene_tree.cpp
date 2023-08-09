@@ -607,34 +607,7 @@ void SceneTree::post_process(float p_time) {
 	_notify_group_pause("post_process_internal", Node::NOTIFICATION_POST_INTERNAL_PROCESS);
 	_notify_group_pause("post_process", Node::NOTIFICATION_POST_PROCESS);
 
-	--root_lock;
-}
-//## END_ENGINE_EDIT
-
-bool SceneTree::idle(float p_time) {
-	//print_line("ram: "+itos(OS::get_singleton()->get_static_memory_usage())+" sram: "+itos(OS::get_singleton()->get_dynamic_memory_usage()));
-	//print_line("node count: "+itos(get_node_count()));
-	//print_line("TEXTURE RAM: "+itos(VS::get_singleton()->get_render_info(VS::INFO_TEXTURE_MEM_USED)));
-
-	root_lock++;
-
-	MainLoop::idle(p_time);
-
-	idle_process_time = p_time;
-
-	if (multiplayer_poll) {
-		multiplayer->poll();
-	}
-
-	emit_signal("idle_frame");
-
-	MessageQueue::get_singleton()->flush(); //small little hack
-
-	flush_transform_notifications();
-
-	_notify_group_pause("idle_process_internal", Node::NOTIFICATION_INTERNAL_PROCESS);
-	_notify_group_pause("idle_process", Node::NOTIFICATION_PROCESS);
-
+	// now continue past the regular update ticks.
 	Size2 win_size = OS::get_singleton()->get_window_size();
 
 	if (win_size != last_screen_size) {
@@ -722,7 +695,34 @@ bool SceneTree::idle(float p_time) {
 	if (_physics_interpolation_enabled) {
 		VisualServer::get_singleton()->pre_draw(true);
 	}
+}
+//## END_ENGINE_EDIT
 
+bool SceneTree::idle(float p_time) {
+	//print_line("ram: "+itos(OS::get_singleton()->get_static_memory_usage())+" sram: "+itos(OS::get_singleton()->get_dynamic_memory_usage()));
+	//print_line("node count: "+itos(get_node_count()));
+	//print_line("TEXTURE RAM: "+itos(VS::get_singleton()->get_render_info(VS::INFO_TEXTURE_MEM_USED)));
+
+	root_lock++;
+
+	MainLoop::idle(p_time);
+
+	idle_process_time = p_time;
+
+	if (multiplayer_poll) {
+		multiplayer->poll();
+	}
+
+	emit_signal("idle_frame");
+
+	MessageQueue::get_singleton()->flush(); //small little hack
+
+	flush_transform_notifications();
+
+	_notify_group_pause("idle_process_internal", Node::NOTIFICATION_INTERNAL_PROCESS);
+	_notify_group_pause("idle_process", Node::NOTIFICATION_PROCESS);
+
+	--root_lock;
 	return _quit;
 }
 
