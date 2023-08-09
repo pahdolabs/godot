@@ -1847,18 +1847,19 @@ void GradientTexture2D::_update() {
 	}
 	Ref<Image> image;
 	image.instance();
+	int iWidth = width, iHeight = height; // store these values as they can be modified concurrently.
 
 	if (gradient->get_points_count() <= 1) { // No need to interpolate.
-		image->create(width, height, false, (use_hdr) ? Image::FORMAT_RGBAF : Image::FORMAT_RGBA8);
+		image->create(iWidth, iHeight, false, (use_hdr) ? Image::FORMAT_RGBAF : Image::FORMAT_RGBA8);
 		image->fill((gradient->get_points_count() == 1) ? gradient->get_color(0) : Color(0, 0, 0, 1));
 	} else {
 		if (use_hdr) {
-			image->create(width, height, false, Image::FORMAT_RGBAF);
+			image->create(iWidth, iHeight, false, Image::FORMAT_RGBAF);
 			Gradient &g = **gradient;
 			// `create()` isn't available for non-uint8_t data, so fill in the data manually.
 			image->lock();
-			for (int y = 0; y < height; y++) {
-				for (int x = 0; x < width; x++) {
+			for (int y = 0; y < iHeight; y++) {
+				for (int x = 0; x < iWidth; x++) {
 					float ofs = _get_gradient_offset_at(x, y);
 					image->set_pixel(x, y, g.get_color_at_offset(ofs));
 				}
@@ -1866,26 +1867,26 @@ void GradientTexture2D::_update() {
 			image->unlock();
 		} else {
 			PoolVector<uint8_t> data;
-			data.resize(width * height * 4);
+			data.resize(iWidth * iHeight * 4);
 			{
 				uint8_t *wd8 = data.write().ptr();
 				Gradient &g = **gradient;
-				for (int y = 0; y < height; y++) {
-					for (int x = 0; x < width; x++) {
+				for (int y = 0; y < iHeight; y++) {
+					for (int x = 0; x < iWidth; x++) {
 						float ofs = _get_gradient_offset_at(x, y);
 						const Color &c = g.get_color_at_offset(ofs);
 
-						wd8[(x + (y * width)) * 4 + 0] = uint8_t(CLAMP(c.r * 255.0, 0, 255));
-						wd8[(x + (y * width)) * 4 + 1] = uint8_t(CLAMP(c.g * 255.0, 0, 255));
-						wd8[(x + (y * width)) * 4 + 2] = uint8_t(CLAMP(c.b * 255.0, 0, 255));
-						wd8[(x + (y * width)) * 4 + 3] = uint8_t(CLAMP(c.a * 255.0, 0, 255));
+						wd8[(x + (y * iWidth)) * 4 + 0] = uint8_t(CLAMP(c.r * 255.0, 0, 255));
+						wd8[(x + (y * iWidth)) * 4 + 1] = uint8_t(CLAMP(c.g * 255.0, 0, 255));
+						wd8[(x + (y * iWidth)) * 4 + 2] = uint8_t(CLAMP(c.b * 255.0, 0, 255));
+						wd8[(x + (y * iWidth)) * 4 + 3] = uint8_t(CLAMP(c.a * 255.0, 0, 255));
 					}
 				}
 			}
-			image->create(width, height, false, Image::FORMAT_RGBA8, data);
+			image->create(iWidth, iHeight, false, Image::FORMAT_RGBA8, data);
 		}
 	}
-	VS::get_singleton()->texture_allocate(texture, width, height, 0, image->get_format(), VS::TEXTURE_TYPE_2D, VS::TEXTURE_FLAG_FILTER);
+	VS::get_singleton()->texture_allocate(texture, iWidth, iHeight, 0, image->get_format(), VS::TEXTURE_TYPE_2D, VS::TEXTURE_FLAG_FILTER);
 	VS::get_singleton()->texture_set_data(texture, image);
 
 	emit_changed();
