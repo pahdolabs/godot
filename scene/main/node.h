@@ -225,6 +225,7 @@ private:
 	Array _get_children() const;
 	Array _get_groups() const;
 
+	Variant _srpc_bind(const Variant **p_args, int p_argcount, Variant::CallError &r_error);
 	Variant _rpc_bind(const Variant **p_args, int p_argcount, Variant::CallError &r_error);
 	Variant _rpc_unreliable_bind(const Variant **p_args, int p_argcount, Variant::CallError &r_error);
 	Variant _rpc_id_bind(const Variant **p_args, int p_argcount, Variant::CallError &r_error);
@@ -522,6 +523,7 @@ public:
 	void rpc_config(const StringName &p_method, MultiplayerAPI::RPCMode p_mode); // config a local method for RPC
 	void rset_config(const StringName &p_property, MultiplayerAPI::RPCMode p_mode); // config a local property for RPC
 
+	void srpc(const StringName &p_method, VARIANT_ARG_LIST); //rpc call, honors RPCMode
 	void rpc(const StringName &p_method, VARIANT_ARG_LIST); //rpc call, honors RPCMode
 	void rpc_unreliable(const StringName &p_method, VARIANT_ARG_LIST); //rpc call, honors RPCMode
 	void rpc_id(int p_peer_id, const StringName &p_method, VARIANT_ARG_LIST); //rpc call, honors RPCMode
