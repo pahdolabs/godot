@@ -614,7 +614,7 @@ void Node::srpc(const StringName &p_method, VARIANT_ARG_DECLARE) {
 	bool call_native = false;
 	call_native = has_method(p_method);
 	if (!call_native) {
-		if (!get_script_instance()->has_method(p_method)) {
+		if (get_script_instance() == nullptr || !get_script_instance()->has_method(p_method)) {
 			return;
 		}
 	}
@@ -717,7 +717,7 @@ Variant Node::_srpc_bind(const Variant **p_args, int p_argcount, Variant::CallEr
 	bool call_native = false;
 	call_native = has_method(method);
 	if (!call_native) {
-		if (!get_script_instance()->has_method(method)) {
+		if (get_script_instance() == nullptr || !get_script_instance()->has_method(method)) {
 			r_error.error = Variant::CallError::CALL_ERROR_INVALID_METHOD;
 			return Variant();
 		}
