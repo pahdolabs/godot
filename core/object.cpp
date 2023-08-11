@@ -741,8 +741,11 @@ static void _test_call_error(const StringName &p_func, const Variant::CallError 
 
 void Object::call_multilevel(const StringName &p_method, const Variant **p_args, int p_argcount) {
 	ZoneScoped;
-	CharString c = Profiler::stringify_method(p_method, p_args, p_argcount);
-	ZoneName(c.ptr(), c.size());
+	const String class_name = get_class();
+	const CharString call_details = Profiler::stringify_method(class_name, p_method, p_args, p_argcount);
+	const CharString method_name = String(p_method).utf8();
+	ZoneName(method_name.ptr(), method_name.size());
+	ZoneText(call_details.ptr(), call_details.size());
 
 	if (p_method == CoreStringNames::get_singleton()->_free) {
 #ifdef DEBUG_ENABLED
@@ -871,8 +874,13 @@ void Object::call_multilevel(const StringName &p_name, VARIANT_ARG_DECLARE) {
 
 Variant Object::call(const StringName &p_method, const Variant **p_args, int p_argcount, Variant::CallError &r_error) {
 	ZoneScoped;
-	CharString c = Profiler::stringify_method(p_method, p_args, p_argcount);
-	ZoneName(c.ptr(), c.size());
+	// TODO: Add methods to StringName and Object to return CharStrings.
+	// TODO: Modify stringify_method to accept CharStrings as input.
+	const String class_name = get_class();
+	const CharString call_details = Profiler::stringify_method(class_name, p_method, p_args, p_argcount);
+	const CharString method_name = String(p_method).utf8();
+	ZoneName(method_name.ptr(), method_name.size());
+	ZoneText(call_details.ptr(), call_details.size());
 
 	r_error.error = Variant::CallError::CALL_OK;
 
