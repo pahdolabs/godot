@@ -1245,8 +1245,11 @@ void Variant::call_ptr(const StringName &p_method, const Variant **p_args, int p
 		_VariantCall::FuncData &funcdata = E->get();
 		{
 			ZoneScoped;
-			CharString c = Profiler::stringify_method(p_method, p_args, p_argcount);
-			ZoneName(c.ptr(), c.size());
+			const String class_name = get_type_name(get_type());
+			const CharString call_details = Profiler::stringify_method(class_name, p_method, p_args, p_argcount);
+			const CharString method_name = String(p_method).utf8();
+			ZoneName(method_name.ptr(), method_name.size());
+			ZoneText(call_details.ptr(), call_details.size());
 			funcdata.call(ret, *this, p_args, p_argcount, r_error);
 		}
 	}
