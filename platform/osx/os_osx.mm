@@ -37,6 +37,7 @@
 #include "dir_access_osx.h"
 #include "drivers/gles2/rasterizer_gles2.h"
 #include "drivers/gles3/rasterizer_gles3.h"
+#include "godot_tracy/profiler.h"
 #include "main/main.h"
 #include "servers/visual/visual_server_raster.h"
 
@@ -3426,6 +3427,8 @@ void OS_OSX::run() {
 
 	while (!force_quit && !quit) {
 		@try {
+			FrameMark;
+			ZoneScoped;
 			process_events(); // get rid of pending events
 			joypad_osx->process_joypads();
 

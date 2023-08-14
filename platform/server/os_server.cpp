@@ -33,6 +33,7 @@
 #include "core/print_string.h"
 #include "drivers/dummy/rasterizer_dummy.h"
 #include "drivers/dummy/texture_loader_dummy.h"
+#include "godot_tracy/profiler.h"
 #include "servers/visual/visual_server_raster.h"
 
 #include "main/main.h"
@@ -199,6 +200,8 @@ void OS_Server::run() {
 	main_loop->init();
 
 	while (!force_quit) {
+		FrameMark;
+		ZoneScoped;
 		if (Main::iteration())
 			break;
 	};
