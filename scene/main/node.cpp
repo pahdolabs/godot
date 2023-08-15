@@ -606,7 +606,41 @@ void Node::rset_config(const StringName &p_property, MultiplayerAPI::RPCMode p_m
 }
 
 /***** RPC FUNCTIONS ********/
+void Node::srpc(const StringName &p_method, VARIANT_ARG_DECLARE) {
+	if (get_tree()->has_network_peer()) {
+		rpc(p_method, VARIANT_ARG_PASS);
+		return;
+	}
+	bool call_native = false;
+	call_native = has_method(p_method);
+	if (!call_native) {
+		if (get_script_instance() == nullptr || !get_script_instance()->has_method(p_method)) {
+			return;
+		}
+	}
 
+	VARIANT_ARGPTRS;
+	int argc = 0;
+	for (int i = 0; i < VARIANT_ARG_MAX; i++) {
+		if (argptr[i]->get_type() == Variant::NIL) {
+			break;
+		}
+		argc++;
+	}
+	Variant::CallError ce;
+	ce.error = Variant::CallError::CALL_OK;
+
+	if (call_native) {
+		call(p_method, argptr, argc, ce);
+	} else {
+		get_script_instance()->call(p_method, argptr, argc, ce);
+	}
+	if (ce.error != Variant::CallError::CALL_OK) {
+		String error = Variant::get_call_error_text(this, p_method, argptr, argc, ce);
+		error = "rpc() aborted in local call:  - " + error + ".";
+		ERR_PRINT(error);
+	}
+}
 void Node::rpc(const StringName &p_method, VARIANT_ARG_DECLARE) {
 	VARIANT_ARGPTRS;
 
@@ -661,6 +695,44 @@ void Node::rpc_unreliable_id(int p_peer_id, const StringName &p_method, VARIANT_
 	}
 
 	rpcp(p_peer_id, true, p_method, argptr, argc);
+}
+
+Variant Node::_srpc_bind(const Variant **p_args, int p_argcount, Variant::CallError &r_error) {
+	if (get_tree()->has_network_peer()) {
+		return _rpc_bind(p_args, p_argcount, r_error);
+	}
+
+	if (p_argcount < 1) {
+		r_error.error = Variant::CallError::CALL_ERROR_TOO_FEW_ARGUMENTS;
+		r_error.argument = 1;
+		return Variant();
+	}
+	if (p_args[0]->get_type() != Variant::STRING) {
+		r_error.error = Variant::CallError::CALL_ERROR_INVALID_ARGUMENT;
+		r_error.argument = 0;
+		r_error.expected = Variant::STRING;
+		return Variant();
+	}
+	StringName method = *p_args[0];
+	bool call_native = false;
+	call_native = has_method(method);
+	if (!call_native) {
+		if (get_script_instance() == nullptr || !get_script_instance()->has_method(method)) {
+			r_error.error = Variant::CallError::CALL_ERROR_INVALID_METHOD;
+			return Variant();
+		}
+	}
+	r_error.error = Variant::CallError::CALL_OK;
+
+	if (call_native) {
+		call(method, (p_args + 1), (p_argcount - 1), r_error);
+	} else {
+		get_script_instance()->call(method, (p_args + 1), (p_argcount - 1), r_error);
+	}
+	if (r_error.error != Variant::CallError::CALL_OK) {
+		ERR_PRINT(Variant::get_call_error_text(this, method, (p_args + 1), (p_argcount - 1), r_error));
+	}
+	return Variant();
 }
 
 Variant Node::_rpc_bind(const Variant **p_args, int p_argcount, Variant::CallError &r_error) {
@@ -3183,6 +3255,8 @@ void Node::_bind_methods() {
 
 		mi.arguments.push_back(PropertyInfo(Variant::STRING, "method"));
 
+		mi.name = "srpc";
+		ClassDB::bind_vararg_method(METHOD_FLAGS_DEFAULT, "srpc", &Node::_srpc_bind, mi);
 		mi.name = "rpc";
 		ClassDB::bind_vararg_method(METHOD_FLAGS_DEFAULT, "rpc", &Node::_rpc_bind, mi);
 		mi.name = "rpc_unreliable";
