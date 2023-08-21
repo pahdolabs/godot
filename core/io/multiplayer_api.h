@@ -149,6 +149,7 @@ public:
 	bool has_network_peer() const { return network_peer.is_valid(); }
 	Vector<int> get_network_connected_peers() const;
 	int get_rpc_sender_id() const { return rpc_sender_id; }
+	void set_rpc_sender_id(int p_rpc_sender_id) { rpc_sender_id = p_rpc_sender_id; }
 	int get_network_unique_id() const;
 	bool is_network_server() const;
 	void set_refuse_new_network_connections(bool p_refuse);
@@ -166,6 +167,8 @@ public:
 
 	MultiplayerAPI();
 	~MultiplayerAPI();
+
+	static const int LOCAL_CLIENT_SENDER_ID = INT_MAX - 1;
 };
 
 VARIANT_ENUM_CAST(MultiplayerAPI::RPCMode);

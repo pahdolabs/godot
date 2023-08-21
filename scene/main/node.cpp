@@ -630,11 +630,21 @@ void Node::srpc(const StringName &p_method, VARIANT_ARG_DECLARE) {
 	Variant::CallError ce;
 	ce.error = Variant::CallError::CALL_OK;
 
+
+	Ref<MultiplayerAPI> api = get_multiplayer();
+	int sender = api->get_network_unique_id();
+	if (sender <= 0) {
+		sender = MultiplayerAPI::LOCAL_CLIENT_SENDER_ID;
+	}
+	int temp_id = api->get_rpc_sender_id();
+	get_multiplayer()->set_rpc_sender_id(sender);
 	if (call_native) {
 		call(p_method, argptr, argc, ce);
 	} else {
 		get_script_instance()->call(p_method, argptr, argc, ce);
 	}
+	get_multiplayer()->set_rpc_sender_id(temp_id);
+
 	if (ce.error != Variant::CallError::CALL_OK) {
 		String error = Variant::get_call_error_text(this, p_method, argptr, argc, ce);
 		error = "rpc() aborted in local call:  - " + error + ".";
