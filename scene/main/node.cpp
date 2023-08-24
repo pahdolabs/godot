@@ -632,8 +632,10 @@ void Node::srpc(const StringName &p_method, VARIANT_ARG_DECLARE) {
 
 
 	Ref<MultiplayerAPI> api = get_multiplayer();
-	int sender = api->get_network_unique_id();
-	if (sender <= 0) {
+	int sender;
+	if (api->get_network_peer().is_null() == false) {
+		sender = api->get_network_unique_id();
+	} else {
 		sender = MultiplayerAPI::LOCAL_CLIENT_SENDER_ID;
 	}
 	int temp_id = api->get_rpc_sender_id();

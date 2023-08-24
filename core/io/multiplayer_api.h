@@ -168,7 +168,7 @@ public:
 	MultiplayerAPI();
 	~MultiplayerAPI();
 
-	static const int LOCAL_CLIENT_SENDER_ID = INT_MAX - 1;
+	static const int LOCAL_CLIENT_SENDER_ID = 2147483646; // INT_MAX - 1
 };
 
 VARIANT_ENUM_CAST(MultiplayerAPI::RPCMode);
