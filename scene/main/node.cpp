@@ -710,7 +710,7 @@ void Node::rpc_unreliable_id(int p_peer_id, const StringName &p_method, VARIANT_
 }
 
 Variant Node::_srpc_bind(const Variant **p_args, int p_argcount, Variant::CallError &r_error) {
-	if (get_tree()->has_network_peer()) {
+	if (get_tree() != nullptr && get_tree()->has_network_peer()) {
 		return _rpc_bind(p_args, p_argcount, r_error);
 	}
 
