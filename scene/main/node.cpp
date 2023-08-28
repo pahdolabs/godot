@@ -638,7 +638,10 @@ void Node::srpc(const StringName &p_method, VARIANT_ARG_DECLARE) {
 	} else {
 		sender = MultiplayerAPI::LOCAL_CLIENT_SENDER_ID;
 	}
-	int temp_id = api->get_rpc_sender_id();
+	int temp_id = 0;
+	if (api.is_null() == false) {
+		temp_id = api->get_rpc_sender_id();
+	}
 	get_multiplayer()->set_rpc_sender_id(sender);
 	if (call_native) {
 		call(p_method, argptr, argc, ce);
