@@ -607,7 +607,7 @@ void Node::rset_config(const StringName &p_property, MultiplayerAPI::RPCMode p_m
 
 /***** RPC FUNCTIONS ********/
 void Node::srpc(const StringName &p_method, VARIANT_ARG_DECLARE) {
-	if (get_tree()->has_network_peer()) {
+	if (get_tree() != nullptr && get_tree()->get_multiplayer().is_null() == false && get_tree()->has_network_peer()) {
 		rpc(p_method, VARIANT_ARG_PASS);
 		return;
 	}
