@@ -35,6 +35,7 @@
 #include "core/os/file_access.h"
 #include "core/os/os.h"
 #include "core/script_language.h"
+#include "godot_tracy/profiler.h"
 #include "scene/main/node.h" //only so casting works
 
 #include <stdio.h>
@@ -143,6 +144,7 @@ void Resource::reload_from_file() {
 }
 
 Ref<Resource> Resource::duplicate_for_local_scene(Node *p_for_scene, Map<Ref<Resource>, Ref<Resource>> &remap_cache) {
+	ZoneScoped;
 	List<PropertyInfo> plist;
 	get_property_list(&plist);
 
@@ -178,6 +180,7 @@ Ref<Resource> Resource::duplicate_for_local_scene(Node *p_for_scene, Map<Ref<Res
 }
 
 void Resource::configure_for_local_scene(Node *p_for_scene, Map<Ref<Resource>, Ref<Resource>> &remap_cache) {
+	ZoneScoped;
 	List<PropertyInfo> plist;
 	get_property_list(&plist);
 

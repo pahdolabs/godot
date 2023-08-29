@@ -35,6 +35,7 @@
 #include "core/io/resource_loader.h"
 #include "core/project_settings.h"
 #include "editor/editor_inspector.h"
+#include "godot_tracy/profiler.h"
 #include "scene/2d/node_2d.h"
 #include "scene/3d/spatial.h"
 #include "scene/gui/control.h"
@@ -72,6 +73,7 @@ static Array _sanitize_node_pinned_properties(Node *p_node) {
 }
 
 Node *SceneState::instance(GenEditState p_edit_state) const {
+	ZoneNamedN(instanceZone, "SceneState::instance", true);
 	// nodes where instancing failed (because something is missing)
 	List<Node *> stray_instances;
 
@@ -112,6 +114,9 @@ Node *SceneState::instance(GenEditState p_edit_state) const {
 
 	for (int i = 0; i < nc; i++) {
 		const NodeData &n = nd[i];
+		ZoneNamedN(instanceNodeZone, "instance node", true);
+		const CharString zoneNodeName = String(snames[n.name]).utf8();
+		ZoneTextV(instanceNodeZone, zoneNodeName.ptr(), zoneNodeName.size());
 
 		Node *parent = nullptr;
 		String old_parent_path;
@@ -220,6 +225,9 @@ Node *SceneState::instance(GenEditState p_edit_state) const {
 					bool valid;
 					ERR_FAIL_INDEX_V(nprops[j].name, sname_count, nullptr);
 					ERR_FAIL_INDEX_V(nprops[j].value, prop_count, nullptr);
+					ZoneNamedN(instancePropertyZone, "instance property", true);
+					const CharString zonePropertyName = String(snames[nprops[j].name]).utf8();
+					ZoneTextV(instancePropertyZone, zonePropertyName.ptr(), zonePropertyName.size());
 
 					if (snames[nprops[j].name] == CoreStringNames::get_singleton()->_script) {
 						//work around to avoid old script variables from disappearing, should be the proper fix to:
@@ -245,6 +253,7 @@ Node *SceneState::instance(GenEditState p_edit_state) const {
 							Ref<Resource> res = value;
 							if (res.is_valid()) {
 								if (res->is_local_to_scene()) {
+									ZoneNamedN(localResourceZone, "local resource", true);
 									Map<Ref<Resource>, Ref<Resource>>::Element *E = resources_local_to_scene.find(res);
 
 									if (E) {
@@ -258,6 +267,7 @@ Node *SceneState::instance(GenEditState p_edit_state) const {
 											resources_local_to_scene[res] = res;
 
 										} else {
+											ZoneNamedN(duplicateLocalResourceZone, "duplicate local resource", true);
 											//for instances, a copy must be made
 											Node *base2 = i == 0 ? node : ret_nodes[0];
 											Ref<Resource> local_dupe = res->duplicate_for_local_scene(base2, resources_local_to_scene);
@@ -1591,6 +1601,7 @@ bool PackedScene::can_instance() const {
 }
 
 Node *PackedScene::instance(GenEditState p_edit_state) const {
+	ZoneScoped;
 #ifndef TOOLS_ENABLED
 	ERR_FAIL_COND_V_MSG(p_edit_state != GEN_EDIT_STATE_DISABLED, NULL, "Edit state is only for editors, does not work without tools compiled.");
 #endif
