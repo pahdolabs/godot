@@ -91,6 +91,7 @@ void GDScript::_clear_pending_func_states() {
 }
 
 GDScriptInstance *GDScript::_create_instance(const Variant **p_args, int p_argcount, Object *p_owner, bool p_isref, Variant::CallError &r_error) {
+	ZoneScoped;
 	/* STEP 1, CREATE */
 
 	GDScriptInstance *instance = memnew(GDScriptInstance);
@@ -133,6 +134,7 @@ GDScriptInstance *GDScript::_create_instance(const Variant **p_args, int p_argco
 }
 
 Variant GDScript::_new(const Variant **p_args, int p_argcount, Variant::CallError &r_error) {
+	ZoneScoped;
 	/* STEP 1, CREATE */
 
 	if (!valid) {
@@ -1100,6 +1102,7 @@ Variant::Type GDScriptInstance::get_property_type(const StringName &p_name, bool
 
 void GDScriptInstance::get_property_list(List<PropertyInfo> *p_properties) const {
 	// exported members, not done yet!
+	ZoneScoped;
 
 	const GDScript *sptr = script.ptr();
 	List<PropertyInfo> props;
