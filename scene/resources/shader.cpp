@@ -29,7 +29,9 @@
 /*************************************************************************/
 
 #include "shader.h"
+
 #include "core/os/file_access.h"
+#include "godot_tracy/profiler.h"
 #include "scene/scene_string_names.h"
 #include "servers/visual/shader_language.h"
 #include "servers/visual_server.h"
@@ -40,6 +42,7 @@ Shader::Mode Shader::get_mode() const {
 }
 
 void Shader::set_code(const String &p_code) {
+	ZoneScoped;
 	String type = ShaderLanguage::get_shader_type(p_code);
 
 	if (type == "canvas_item") {

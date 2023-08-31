@@ -33,6 +33,7 @@
 #include "core/engine.h"
 #include "core/project_settings.h"
 #include "core/version.h"
+#include "godot_tracy/profiler.h"
 
 #ifdef TOOLS_ENABLED
 #include "editor/editor_settings.h"
@@ -180,6 +181,7 @@ Variant ShaderMaterial::property_get_revert(const String &p_name) {
 }
 
 void ShaderMaterial::set_shader(const Ref<Shader> &p_shader) {
+	ZoneScoped;
 	// Only connect/disconnect the signal when running in the editor.
 	// This can be a slow operation, and `_change_notify()` (which is called by `_shader_changed()`)
 	// does nothing in non-editor builds anyway. See GH-34741 for details.
@@ -208,6 +210,7 @@ Ref<Shader> ShaderMaterial::get_shader() const {
 }
 
 void ShaderMaterial::set_shader_param(const StringName &p_param, const Variant &p_value) {
+	ZoneScoped;
 	VS::get_singleton()->material_set_param(_get_material(), p_param, p_value);
 }
 
@@ -216,6 +219,7 @@ Variant ShaderMaterial::get_shader_param(const StringName &p_param) const {
 }
 
 void ShaderMaterial::_shader_changed() {
+	ZoneScoped;
 	_change_notify(); //update all properties
 }
 
@@ -359,6 +363,7 @@ void SpatialMaterial::finish_shaders() {
 }
 
 void SpatialMaterial::_update_shader() {
+	ZoneScoped;
 	dirty_materials->remove(&element);
 
 	MaterialKey mk = _compute_key();
@@ -384,6 +389,8 @@ void SpatialMaterial::_update_shader() {
 	}
 
 	//must create a shader!
+	const char zone_text[] = "Creating a shader";
+	ZoneText(zone_text, sizeof(zone_text));
 
 	// Add a comment to describe the shader origin (useful when converting to ShaderMaterial).
 	String code = "// NOTE: Shader automatically converted from " VERSION_NAME " " VERSION_FULL_CONFIG "'s SpatialMaterial.\n\n";
@@ -1382,6 +1389,7 @@ bool SpatialMaterial::get_feature(Feature p_feature) const {
 }
 
 void SpatialMaterial::set_texture(TextureParam p_param, const Ref<Texture> &p_texture) {
+	ZoneScoped;
 	ERR_FAIL_INDEX(p_param, TEXTURE_MAX);
 	textures[p_param] = p_texture;
 	RID rid = p_texture.is_valid() ? p_texture->get_rid() : RID();
