@@ -26,7 +26,10 @@ if env["builtin_enet"]:
     env_enet.Prepend(CPPPATH=[thirdparty_dir])
     # For debug info, add `ENET_DEBUG` to `CPPDEFINES` below. 
     # Note that it may enable calls to `perror`, which do not compile on MacOS.
-    env_enet.Append(CPPDEFINES=["GODOT_ENET"])
+    cpp_defines = ["GODOT_ENET"]
+    if env["enet_debug"]:
+        cpp_defines += ["ENET_DEBUG"]
+    env_enet.Append(CPPDEFINES=cpp_defines)
 
     env_thirdparty = env_enet.Clone()
     env_thirdparty.disable_warnings()
