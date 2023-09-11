@@ -197,6 +197,9 @@ opts.Add("CFLAGS", "Custom flags for the C compiler")
 opts.Add("CXXFLAGS", "Custom flags for the C++ compiler")
 opts.Add("LINKFLAGS", "Custom flags for the linker")
 
+# Pahdo custom options
+opts.Add(BoolVariable("enet_debug", "Allows ENet debug statement printing", False))
+
 # Update the environment to have all above options defined
 # in following code (especially platform and custom_modules).
 opts.Update(env_base)
