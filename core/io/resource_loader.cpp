@@ -199,6 +199,9 @@ RES ResourceFormatLoader::load(const String &p_path, const String &p_original_pa
 			}
 			
 			Dictionary context_data;
+			context_data["polling"] = p_path;
+			context_data["type"] = "Loader";
+			context_data["stage"] = -1;
 			Sentry::singleton()->add_context("Resource.Loader", context_data);
 			
 			return ril->get_resource();
