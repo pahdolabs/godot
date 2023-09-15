@@ -38,6 +38,7 @@
 #include "core/project_settings.h"
 #include "core/translation.h"
 #include "core/variant_parser.h"
+#include "sentry/sentry.h"
 
 Ref<ResourceFormatLoader> ResourceLoader::loader[ResourceLoader::MAX_LOADERS];
 
@@ -196,6 +197,13 @@ RES ResourceFormatLoader::load(const String &p_path, const String &p_original_pa
 			if (r_error) {
 				*r_error = OK;
 			}
+			
+			Dictionary context_data;
+			context_data["polling"] = p_path;
+			context_data["type"] = "Loader";
+			context_data["stage"] = -1;
+			Sentry::singleton()->add_context("Resource.Loader", context_data);
+			
 			return ril->get_resource();
 		}
 

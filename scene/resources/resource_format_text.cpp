@@ -41,6 +41,8 @@
 #include "core/os/dir_access.h"
 #include "core/version.h"
 
+#include "sentry/sentry.h"
+
 #define _printerr() ERR_PRINT(String(res_path + ":" + itos(lines) + " - Parse Error: " + error_text).utf8().get_data());
 
 ///
@@ -367,6 +369,13 @@ Error ResourceInteractiveLoaderText::poll() {
 	if (error != OK) {
 		return error;
 	}
+	
+	Dictionary context_data;
+	context_data["polling"] = res_path;
+	context_data["type"] = "text";
+	context_data["stage"] = get_stage();
+	
+	Sentry::singleton()->add_context("Resource.Loader", context_data);
 
 	if (next_tag.name == "ext_resource") {
 		if (!next_tag.fields.has("path")) {
