@@ -37,6 +37,8 @@
 #include "core/project_settings.h"
 #include "core/version.h"
 
+#include "sentry/sentry.h"
+
 //#define print_bl(m_what) print_line(m_what)
 #define print_bl(m_what) (void)(m_what)
 
@@ -595,6 +597,13 @@ Error ResourceInteractiveLoaderBinary::poll() {
 	}
 
 	int s = stage;
+	
+	Dictionary context_data;
+	context_data["polling"] = res_path;
+	context_data["type"] = "binary";
+	context_data["stage"] = s;
+	
+	Sentry::singleton()->add_context("Resource.Loader", context_data);
 
 	if (s < external_resources.size()) {
 		String path = external_resources[s].path;
